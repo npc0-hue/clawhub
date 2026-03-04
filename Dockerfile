@@ -3,8 +3,8 @@ FROM oven/bun:1 AS builder
 
 WORKDIR /app
 
-# 复制 package.json 和 bun.lockb
-COPY package.json bun.lockb ./
+# 复制 package.json 和锁文件
+COPY package.json bun.lock ./
 
 # 安装依赖
 RUN bun install --frozen-lockfile --production=false

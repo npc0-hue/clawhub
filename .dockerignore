@@ -48,6 +48,8 @@ test-results
 docs
 *.md
 !README.md
+!DOCKER_QUICKSTART.md
+!README_DEPLOY.md
 
 # Docker
 Dockerfile
@@ -56,6 +58,8 @@ docker-compose*.yml
 
 # Scripts
 scripts
+!scripts/deploy.sh
+!scripts/generate-secrets.sh
 
 # Misc
 .vercel
