@@ -27,6 +27,11 @@ export default function Header() {
   const isSoulMode = siteMode === 'souls'
   const clawHubUrl = getClawHubSiteUrl()
 
+  // Debug logging
+  if (typeof window !== 'undefined') {
+    console.log('[Header] auth status:', { isAuthenticated, isLoading, me })
+  }
+
   const avatar = me?.image ?? (me?.email ? gravatarUrl(me.email) : undefined)
   const handle = me?.handle ?? me?.displayName ?? 'user'
   const initial = (me?.displayName ?? me?.name ?? handle).charAt(0).toUpperCase()

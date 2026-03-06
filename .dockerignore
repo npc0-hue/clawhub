@@ -1,0 +1,62 @@
+# Git
+.git
+.gitignore
+
+# Dependencies
+node_modules
+bun_modules
+
+# Build outputs
+build
+dist
+.next
+# Keep .output for Docker builds (Nitro output)
+# .output
+
+# Environment files
+.env.test
+.env.production
+# Keep .env.local for Docker builds
+# .env.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+bun-debug.log
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+coverage
+.playwright
+test-results
+
+# Documentation
+docs
+*.md
+!README.md
+!DOCKER_QUICKSTART.md
+!README_DEPLOY.md
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# Scripts
+scripts
+!scripts/deploy.sh
+!scripts/generate-secrets.sh
+
+# Misc
+.vercel
+.aws

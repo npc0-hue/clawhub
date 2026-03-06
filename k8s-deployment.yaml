@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clawhub
+  labels:
+    app: clawhub
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: clawhub
+  template:
+    metadata:
+      labels:
+        app: clawhub
+    spec:
+      containers:
+      - name: clawhub
+        image: registry-harbor.yafex.cn/base/clawhub:v1-20260305110000
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+          name: http
+        env:
+        # Frontend
+        - name: VITE_CONVEX_URL
+          value: "https://secret-mandrill-759.convex.cloud"
+        - name: VITE_CONVEX_SITE_URL
+          value: "https://secret-mandrill-759.convex.cloud"
+        - name: VITE_SOULHUB_SITE_URL
+          value: "https://clawhub.yafex.cn"
+        - name: VITE_SOULHUB_HOST
+          value: "clawhub.yafex.cn"
+        - name: VITE_SITE_MODE
+          value: "skills"
+        - name: SITE_URL
+          value: "https://clawhub.yafex.cn"
+        - name: CONVEX_SITE_URL
+          value: "https://clawhub.yafex.cn"
+        # Convex Auth (GitHub OAuth App)
+        - name: AUTH_GITHUB_ID
+          value: "Ov23lipQ6P3pwWwSe7Wi"
+        - name: AUTH_GITHUB_SECRET
+          value: "43118e7a7fcedc797c4220fc5f88c6640da9cf0f"
+        # Convex Auth JWT keys
+        - name: JWT_PRIVATE_KEY
+          value: |
+            -----BEGIN PRIVATE KEY-----
+            MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC3ap20uV+Cp+Lm
+            sPq1w1TnE/0ugNE+Yavbw3c991uB6+LxZM3yeBs2T0wA5DR+w+of+CHSkxedl46d
+            Qt4bC9BHZ1th16uFAchn/JbOh1pCPxdZoUZkuuliQC03ot37wLjME5qYki9edlJc
+            0nL20/ZSazUKOdEO5fh8ORMkSBHJrv0zzz/2Y0JTgpkKrET3nAmvWW9Iz/6g+IJM
+            Tf9axOBY2s93ksFnwblNZHh42qy+DK0SN+gkkyTRD01x+rn9mRKe3fo+uOiwysvQ
+            MOVbOuYkELPf7O9Jp4off3I/3reBckYR4OKUhDEKJHHBAhCjcPKTFiHdTpAh3SxS
+            qpuPof1DAgMBAAECggEAPMy6R2i1mO2HIRqkmPENqWXuZOZttkSRQBGs6t0et9QW
+            UBeuz0PyHVAu7RK4thbCeuN5bsC0sNhG/alnT8bcPXctCyN/Z2E+af4IjaC/kjsw
+            xdTYrVZqO9fzRUCXXjc16uxKsG2xBxqo1b0rP9fmjM6d7+xXeR1Rf/g5eKrtPpHU
+            EsWL9M9VEuaS2TEC5skptE0NbubHVJDJF9X+EEid6rMF9FpJi6DwYNXL6Io2YxFL
+            Su1Tu5kvLPobncB4l4Yi5KBRjHjPvXlb72VYi8Ug4bVDKdrQ93DQdrR07K3kfPqw
+            yKfXeinEkasFpMSoJe8GDXWrqz+FkU6VnIaDaFQHKQKBgQDZg20YiW1sdOUvbHXt
+            Xb000SAp06FxvqeeFIRblAjDWeILRaK1rrLDzc0PlCFG2ibuHl/h/+KwbwrNhdOm
+            z0RxmSYP8Z0Mhce0kuabGiUm2wm82I333gk0ZjXJgpRG96uuBWnSop+9aF0XAVj/
+            neX3AsAkAtHkgpIongm8+OQtqwKBgQDX3rjpFx9sGycxeGk8Y3ISZHORzm5K8usN
+            iW5+Au5PeYBzXVpL+01Ow6vJhIlVDDVIf3JYLxVsCDV6f2ROWqKuSzkzWKumpFyg
+            S5k1LWRWnc4UXQ7chsPuv+rJAhNjlVDmGfNH8Sux0QZ7tHTMwx1ncKPw2E+EPIk3
+            h67aFthmyQKBgF8mlAngzGJefIeTXb8Ze5RoSzag4oX8jhykAwaAqpiycCTYMIZj
+            xsXK+IJxHWF+Ovt9hBo8MvFVkhc4DM9y6hD7mt/spPP+bc87V+/PryLhPNBEt04P
+            7lzivXLKUYz9+TcmHRXMmC5mQhq3NzSS4S9+H4lhRmo9CC0GfWISStcDAoGAS8P2
+            LolZE/5rwSc7+GAG94GeNny3pUKhUTz9NOkeb3J7rQIE4UowlgaDUtVbxifkw69H
+            mL/dyu8OphH0SLPzCS2JxAXJKVHi2Lfv7AQkhWoZnHgU8T2zoyZk52v9FiSgIkLV
+            alixN1Xf6qcpn3yT42xbffrN3eHJX14V9qGyDlECgYEAyDHNoEkku2LapuTBe6kr
+            8X3t04sSHO26KQQ3nc6YtXKUXs6il6UJXUYFOsmE3Q9b1jyoFwvYdkj2r+b8/tj+
+            dmElXvweHuEJM632kYfs5OtYa/K/ktxX7VsbIxn2rsKbLqUFYYlgE6Cw6VE1HhmA
+            NwCb9uk/coaVCs7mJdDSkLY=
+            -----END PRIVATE KEY-----
+        - name: JWKS
+          value: '{"keys":[{"use":"sig","kty":"RSA","n":"t2qdtLlfgqfi5rD6tcNU5xP9LoDRPmGr28N3Pfdbgevi8WTN8ngbNk9MAOQ0fsPqH_gH0pMXnZeOnULeGwvQ
+    R2dbYderhQHIZ_yWzodaQj8XWaFGZLrpYkAtN6Ld-8C4zBOamJIvXnZSXNJy9tP2Ums1CjnRDuX4fDkTJEgRya79M88_9mNCU4KZCqxE95wJr1lvSM_-oPiCTE3_WsTg
+    WNrPd5LBZ8G5TWR4eNqsvgytEjfoJJMk0Q9Ncfq5_ZkSnt36PrjosMrL0DDlWzrmJBCz3-zvSaeKH39yP963gXJGEeDilIQxCiRxwQIQo3DykxYh3U6QId0sUqqbj6H9
+    Qw","e":"AQAB"}]}'
+        # Embeddings
+        - name: OPENAI_API_KEY
+          value: "sk-CNnVEDxEHPtw4uQfBkpHsUrqrrcCLOFRBMfcPCLHBjEJdrpN"
+        - name: OPENAI_BASE_URL
+          value: "https://yunwu.ai/v1"
+        # Deployment
+        - name: CONVEX_DEPLOYMENT
+          value: "dev:incredible-dachshund-24"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
