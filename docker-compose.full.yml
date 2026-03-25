@@ -1,0 +1,134 @@
+# ===========================================
+# ClawHub 完整部署配置（包含 Convex 自托管）
+# ===========================================
+# 注意：这是用于 Convex Self-Hosted 的配置
+# 如果使用 Convex Cloud（推荐），请使用 docker-compose.yml
+# ===========================================
+
+version: '3.8'
+
+services:
+  # ===========================================
+  # 前端应用（Nitro 服务器）
+  # ===========================================
+  clawhub-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: clawhub-frontend
+    restart: unless-stopped
+    ports:
+      - "${HOST_PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=production
+      - VITE_CONVEX_URL=${CONVEX_URL:-http://convex-backend:3216}
+      - VITE_CONVEX_SITE_URL=${SITE_URL:-http://localhost:3000}
+      - SITE_URL=${SITE_URL:-http://localhost:3000}
+      - CONVEX_SITE_URL=${SITE_URL:-http://localhost:3000}
+    depends_on:
+      - convex-backend
+    networks:
+      - clawhub-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # ===========================================
+  # Convex 后端（自托管模式）
+  # ===========================================
+  convex-backend:
+    image: convex-internal:latest
+    container_name: convex-backend
+    restart: unless-stopped
+    ports:
+      - "${CONVEX_PORT:-3216}:3216"
+    environment:
+      # Convex 自托管配置
+      - NODE_ENV=production
+      - CONVEX_DEPLOYMENT_TYPE=self-hosted
+      
+      # 认证配置
+      - AUTH_GITHUB_ID=${AUTH_GITHUB_ID}
+      - AUTH_GITHUB_SECRET=${AUTH_GITHUB_SECRET}
+      - JWT_PRIVATE_KEY=${JWT_PRIVATE_KEY}
+      - JWKS=${JWKS}
+      
+      # 数据库配置（使用外部 PostgreSQL）
+      - DATABASE_URL=postgresql://convex:convex_password@postgres:5432/convex?schema=convex
+      
+      # 存储配置（使用本地存储或 S3）
+      - STORAGE_TYPE=${STORAGE_TYPE:-local}
+      - STORAGE_PATH=/var/convex/storage
+      
+      # 向量搜索配置
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      
+      # 其他配置
+      - SITE_MODE=${SITE_MODE:-production}
+    volumes:
+      - convex-storage:/var/convex/storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - clawhub-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3216/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # ===========================================
+  # PostgreSQL 数据库（Convex 需要）
+  # ===========================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: clawhub-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: convex
+      POSTGRES_PASSWORD: convex_password
+      POSTGRES_DB: convex
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - clawhub-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U convex"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ===========================================
+  # Redis（可选，用于缓存）
+  # ===========================================
+  redis:
+    image: redis:7-alpine
+    container_name: clawhub-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    networks:
+      - clawhub-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  convex-storage:
+    driver: local
+  postgres-data:
+    driver: local
+  redis-data:
+    driver: local
+
+networks:
+  clawhub-network:
+    driver: bridge

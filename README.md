@@ -86,6 +86,28 @@ Details: [`docs/telemetry.md`](docs/telemetry.md).
 - [`docs/`](docs/README.md) — project documentation (architecture, CLI, auth, deployment, and more).
 - [`docs/spec.md`](docs/spec.md) — product + implementation spec (good first read).
 
+## Quick Deploy (Docker)
+
+Want to deploy with one command? See [README_DEPLOY.md](README_DEPLOY.md).
+
+```bash
+# Generate secrets and configure
+./scripts/generate-secrets.sh
+
+# Edit .env.docker with your GitHub OAuth credentials
+
+# Deploy everything with one command
+docker compose up -d
+```
+
+This starts:
+- Frontend (port 3000)
+- Convex backend (self-hosted)
+- PostgreSQL database
+- Redis cache
+
+Access at http://localhost:3000
+
 ## Local dev
 
 Prereqs: [Bun](https://bun.sh/) (Convex runs via `bunx`, no global install needed).
