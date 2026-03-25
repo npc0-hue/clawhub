@@ -311,5 +311,8 @@ export default function Header() {
 
 function getCurrentRelativeUrl() {
   if (typeof window === 'undefined') return '/'
-  return `${window.location.pathname}${window.location.search}${window.location.hash}`
+  // extend: 允许第三方api访问搜索和下载skill
+  // `@convex-dev/auth`'s `redirectTo` works more reliably with an absolute URL.
+  // We intentionally drop the hash fragment to avoid routing edge-cases after OAuth.
+  return `${window.location.origin}${window.location.pathname}${window.location.search}`
 }

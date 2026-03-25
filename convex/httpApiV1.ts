@@ -19,6 +19,12 @@ import {
 import { starsDeleteRouterV1Handler, starsPostRouterV1Handler } from './httpApiV1/starsV1'
 import { usersListV1Handler, usersPostRouterV1Handler } from './httpApiV1/usersV1'
 import { whoamiV1Handler } from './httpApiV1/whoamiV1'
+// extend: start 允许第三方api访问搜索和下载skill
+import {
+  thirdPartyDownloadSkillHandler,
+  thirdPartySearchSkillsHandler,
+} from './httpApiV1/thirdPartySkillsV1'
+// extend: stop 允许第三方api访问搜索和下载skill
 
 export const searchSkillsV1Http = httpAction(searchSkillsV1Handler)
 export const resolveSkillVersionV1Http = httpAction(resolveSkillVersionV1Handler)
@@ -41,6 +47,11 @@ export const whoamiV1Http = httpAction(whoamiV1Handler)
 export const usersPostRouterV1Http = httpAction(usersPostRouterV1Handler)
 export const usersListV1Http = httpAction(usersListV1Handler)
 
+// extend: start 允许第三方api访问搜索和下载skill
+export const thirdPartySearchSkillsHttp = httpAction(thirdPartySearchSkillsHandler)
+export const thirdPartyDownloadSkillHttp = httpAction(thirdPartyDownloadSkillHandler)
+// extend: stop 允许第三方api访问搜索和下载skill
+
 export const __handlers = {
   searchSkillsV1Handler,
   resolveSkillVersionV1Handler,
@@ -59,4 +70,8 @@ export const __handlers = {
   whoamiV1Handler,
   usersPostRouterV1Handler,
   usersListV1Handler,
+// extend: start 允许第三方api访问搜索和下载skill
+  thirdPartySearchSkillsHandler,
+  thirdPartyDownloadSkillHandler,
+// extend: stop 允许第三方api访问搜索和下载skill
 }

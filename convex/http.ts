@@ -28,6 +28,8 @@ import {
   soulsPostRouterV1Http,
   starsDeleteRouterV1Http,
   starsPostRouterV1Http,
+  thirdPartyDownloadSkillHttp,// extend: 允许第三方api访问搜索和下载skill
+  thirdPartySearchSkillsHttp,// extend: 允许第三方api访问搜索和下载skill
   usersListV1Http,
   usersPostRouterV1Http,
   whoamiV1Http,
@@ -145,6 +147,19 @@ http.route({
   method: 'DELETE',
   handler: soulsDeleteRouterV1Http,
 })
+// extend: start 允许第三方api访问搜索和下载skill
+http.route({
+  path: '/api/v1/public/skills/search',
+  method: 'GET',
+  handler: thirdPartySearchSkillsHttp,
+})
+
+http.route({
+  path: '/api/v1/public/skills/download',
+  method: 'GET',
+  handler: thirdPartyDownloadSkillHttp,
+})
+// extend: stop 允许第三方api访问搜索和下载skill
 
 http.route({
   pathPrefix: '/api/',

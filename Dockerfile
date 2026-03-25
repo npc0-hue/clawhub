@@ -7,7 +7,8 @@ WORKDIR /app
 COPY . .
 
 # 安装依赖（包括 devDependencies，用于构建）
-RUN bun install --frozen-lockfile
+# 使用 --registry 指定加速镜像源，不使用 --frozen-lockfile 以允许镜像源差异
+RUN bun install --registry=https://registry.npmmirror.com
 
 # 构建应用（前端 + Nitro 服务器）
 # 注意：convex/_generated 文件需要在本地运行 `bunx convex codegen` 生成

@@ -8,9 +8,6 @@ import { useAuthStatus } from '../../lib/useAuthStatus'
 
 export const Route = createFileRoute('/cli/auth')({
   component: CliAuth,
-  // Disable SSR for this route - it's a client-side callback page
-  // This fixes the "Only HTML requests are supported here" error
-  ssr: false,
 })
 
 function CliAuth() {

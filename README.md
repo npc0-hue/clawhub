@@ -107,6 +107,234 @@ bunx convex run --no-push devSeed:seedNixSkills
 
 For full setup instructions (env vars, GitHub OAuth, JWT keys, database seeding), see [CONTRIBUTING.md](CONTRIBUTING.md).
 
+## Self-Hosting Deployment
+
+ClawHub supports full self-hosted deployment using the open-source [Convex Backend](https://github.com/get-convex/convex-backend). This gives you complete control over your infrastructure.
+
+### Architecture Overview
+
+A self-hosted deployment consists of three components:
+
+1. **Convex Backend** — Database, server functions, and HTTP actions
+2. **GitHub OAuth App** — Authentication provider
+3. **ClawHub Frontend** — TanStack Start web application
+
+### Prerequisites
+
+- Docker and Docker Compose
+- A domain name (e.g., `convex.dev.3211.com` for Convex HTTP actions, `clawhub.yourdomain.com` for the frontend)
+- GitHub account for OAuth configuration
+
+### Step 1: Deploy Convex Backend
+
+#### 1.1 Create Configuration Files
+
+Download or create a `docker-compose.yml` file for Convex Backend, then create a `.env` file:
+
+```bash
+# .env for Convex Backend
+CONVEX_CLOUD_ORIGIN='http://10.18.1.62:3210'
+CONVEX_SITE_ORIGIN='https://convex.dev.3211.com'
+NEXT_PUBLIC_DEPLOYMENT_URL='http://10.18.1.62:3210'
+RUST_LOG=debug
+```
+
+**Important Notes:**
+- `CONVEX_SITE_ORIGIN` **must** use `https://` protocol (required for GitHub OAuth callbacks)
+- `CONVEX_CLOUD_ORIGIN` and `NEXT_PUBLIC_DEPLOYMENT_URL` point to your Convex API endpoint
+- Replace IP addresses and domains with your actual deployment URLs
+
+#### 1.2 Start Convex Backend
+
+```bash
+docker compose up
+```
+
+#### 1.3 Generate Admin Key
+
+Once the backend is running, generate an admin key for the dashboard/CLI:
+
+```bash
+docker compose exec backend ./generate_admin_key.sh
+```
+
+Save the generated key securely.
+
+#### 1.4 Access Convex Services
+
+- **Dashboard**: http://localhost:6791
+- **Backend API**: http://127.0.0.1:3210
+- **HTTP Actions**: http://127.0.0.1:3211
+
+#### 1.5 Configure Project Environment
+
+In your ClawHub project, create a `.env.local` file (do NOT commit to version control):
+
+```bash
+# .env.local
+CONVEX_SELF_HOSTED_URL='http://127.0.0.1:3210'
+CONVEX_SELF_HOSTED_ADMIN_KEY='<your admin key from generate_admin_key.sh>'
+```
+
+### Step 2: Configure GitHub OAuth App
+
+1. Navigate to [GitHub OAuth Apps](https://github.com/settings/applications/new)
+2. Create a new OAuth App with the following configuration:
+   - **Application name**: ClawHub (or your preferred name)
+   - **Homepage URL**: Your ClawHub frontend domain (e.g., `https://clawhub.yourdomain.com`)
+   - **Authorization callback URL**: `<HTTP Actions URL>/api/auth/callback/github`
+     - Example: `https://convex.dev.3211.com/api/auth/callback/github`
+
+3. After creation, save the **Client ID** and **Client Secret**
+
+### Step 3: Deploy ClawHub Frontend
+
+#### 3.1 Configure Vercel Routing
+
+Update `vercel.json` to point to your Convex HTTP Actions URL:
+
+```json
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://convex.dev.3211.com/api/$1"
+    }
+  ]
+}
+```
+
+#### 3.2 Update Well-Known Files
+
+Update the following files with your ClawHub domain:
+
+**`public/.well-known/clawhub.json`**:
+```json
+{
+  "domain": "clawhub.yourdomain.com"
+}
+```
+
+**`public/.well-known/clawdhub.json`**:
+```json
+{
+  "domain": "clawhub.yourdomain.com"
+}
+```
+
+#### 3.3 Prepare Environment Variables
+
+Copy the example environment file:
+
+```bash
+cp .env.local.example .env.local
+```
+
+Edit `.env.local` with the following variables:
+
+```bash
+# Site Configuration
+SITE_URL='https://clawhub.yourdomain.com'
+
+# Convex URLs
+VITE_CONVEX_URL='http://10.18.1.62:3210'
+VITE_CONVEX_SITE_URL='https://convex.dev.3211.com'
+
+# GitHub OAuth
+AUTH_GITHUB_ID='<your GitHub OAuth Client ID>'
+AUTH_GITHUB_SECRET='<your GitHub OAuth Client Secret>'
+
+# Convex Self-Hosted
+CONVEX_SELF_HOSTED_URL='http://10.18.1.62:3210'
+CONVEX_SELF_HOSTED_ADMIN_KEY='<your admin key from generate_admin_key.sh>'
+
+# Security
+INSTANCE_SECRET='<output from: openssl rand -hex 32>'
+```
+
+Generate the `INSTANCE_SECRET`:
+
+```bash
+openssl rand -hex 32
+```
+
+#### 3.4 Initialize Convex Development
+
+Run the Convex development command to initialize the deployment:
+
+```bash
+bunx convex dev --typecheck=disable
+```
+
+#### 3.5 Configure Environment Variables in Dashboard
+
+1. Open the Convex Dashboard at http://localhost:6791
+2. Navigate to **Settings** → **Environment Variables**
+3. Add the following environment variables:
+
+```
+AUTH_GITHUB_ID=<your GitHub OAuth Client ID>
+AUTH_GITHUB_SECRET=<your GitHub OAuth Client Secret>
+INSTANCE_SECRET=<your instance secret>
+JWKS=<your JWKS configuration>
+JWT_PRIVATE_KEY=<your JWT private key>
+SITE_URL=https://clawhub.yourdomain.com
+```
+
+**Note:** `JWT_PRIVATE_KEY` and `JWKS` will be generated automatically during the `bunx convex dev` command. You can find them in the dashboard after initialization.
+
+#### 3.6 Build Frontend Docker Image
+
+After all configuration is complete, build the ClawHub frontend Docker image:
+
+```bash
+./scripts/build-amd64.sh
+```
+
+This creates a production-ready Docker image for deployment.
+
+### Deployment Checklist
+
+- [ ] Convex Backend running with correct URLs
+- [ ] Admin key generated and saved
+- [ ] GitHub OAuth App configured with correct callback URL
+- [ ] All environment variables set in `.env.local`
+- [ ] Environment variables configured in Convex Dashboard
+- [ ] `vercel.json` updated with HTTP Actions URL
+- [ ] Well-known files updated with ClawHub domain
+- [ ] Frontend Docker image built successfully
+
+### Troubleshooting
+
+**GitHub OAuth callback errors:**
+- Ensure `CONVEX_SITE_ORIGIN` uses `https://` protocol
+- Verify callback URL in GitHub OAuth App matches `<HTTP Actions URL>/api/auth/callback/github`
+- Check that SSL certificates are properly configured for HTTPS domains
+
+**Convex connection issues:**
+- Verify all URL endpoints are accessible from your network
+- Check Docker container logs: `docker compose logs -f`
+- Ensure admin key is correctly copied without extra whitespace
+
+**Frontend build failures:**
+- Run `bunx convex dev --typecheck=disable` first to initialize Convex
+- Verify all environment variables are set correctly
+- Check that Convex Dashboard shows all required environment variables
+
+### Security Considerations
+
+- Never commit `.env.local` or any files containing secrets to version control
+- Rotate `INSTANCE_SECRET` and OAuth credentials periodically
+- Use HTTPS for all production domains
+- Restrict access to Convex Dashboard (port 6791) to trusted networks only
+- Regularly update Docker images and dependencies
+
+### Support
+
+For issues with Convex Backend, refer to the [official documentation](https://github.com/get-convex/convex-backend) or join the `#self-hosted` channel on Convex Discord.
+
+For ClawHub-specific issues, open a GitHub issue or join our [Discord community](https://discord.gg/clawd).
+
 ## Environment
 
 - `VITE_CONVEX_URL`: Convex deployment URL (`https://<deployment>.convex.cloud`).

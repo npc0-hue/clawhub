@@ -1,6 +1,6 @@
 {
-  "apiBase": "https://clawhub.dev.yafex.cn",
-  "authBase": "https://clawhub.dev.yafex.cn",
+  "apiBase": "http://clawhubdev.yourdomain.com",
+  "authBase": "http://clawhubdev.yourdomain.com",
   "minCliVersion": "0.1.0",
-  "registry": "https://clawhub.dev.yafex.cn"
+  "registry": "http://clawhubdev.yourdomain.com"
 }

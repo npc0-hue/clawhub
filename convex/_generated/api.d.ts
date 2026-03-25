@@ -30,6 +30,8 @@ import type * as httpApiV1_shared from "../httpApiV1/shared.js";
 import type * as httpApiV1_skillsV1 from "../httpApiV1/skillsV1.js";
 import type * as httpApiV1_soulsV1 from "../httpApiV1/soulsV1.js";
 import type * as httpApiV1_starsV1 from "../httpApiV1/starsV1.js";
+// extend: 允许第三方api访问搜索和下载skill
+import type * as httpApiV1_thirdPartySkillsV1 from "../httpApiV1/thirdPartySkillsV1.js";
 import type * as httpApiV1_usersV1 from "../httpApiV1/usersV1.js";
 import type * as httpApiV1_whoamiV1 from "../httpApiV1/whoamiV1.js";
 import type * as httpPreflight from "../httpPreflight.js";
@@ -71,6 +73,7 @@ import type * as lib_skillZip from "../lib/skillZip.js";
 import type * as lib_skills from "../lib/skills.js";
 import type * as lib_soulChangelog from "../lib/soulChangelog.js";
 import type * as lib_soulPublish from "../lib/soulPublish.js";
+import type * as lib_thirdPartyAuth from "../lib/thirdPartyAuth.js";
 import type * as lib_tokens from "../lib/tokens.js";
 import type * as lib_userSearch from "../lib/userSearch.js";
 import type * as lib_webhooks from "../lib/webhooks.js";
@@ -124,6 +127,7 @@ declare const fullApi: ApiFromModules<{
   "httpApiV1/skillsV1": typeof httpApiV1_skillsV1;
   "httpApiV1/soulsV1": typeof httpApiV1_soulsV1;
   "httpApiV1/starsV1": typeof httpApiV1_starsV1;
+  "httpApiV1/thirdPartySkillsV1": typeof httpApiV1_thirdPartySkillsV1;
   "httpApiV1/usersV1": typeof httpApiV1_usersV1;
   "httpApiV1/whoamiV1": typeof httpApiV1_whoamiV1;
   httpPreflight: typeof httpPreflight;
@@ -165,6 +169,7 @@ declare const fullApi: ApiFromModules<{
   "lib/skills": typeof lib_skills;
   "lib/soulChangelog": typeof lib_soulChangelog;
   "lib/soulPublish": typeof lib_soulPublish;
+  "lib/thirdPartyAuth": typeof lib_thirdPartyAuth;
   "lib/tokens": typeof lib_tokens;
   "lib/userSearch": typeof lib_userSearch;
   "lib/webhooks": typeof lib_webhooks;

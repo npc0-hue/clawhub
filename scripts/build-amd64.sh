@@ -2,7 +2,7 @@
 set -e
 
 # 镜像信息
-REGISTRY="registry-harbor.yafex.cn/base"
+REGISTRY="registry-harbor.yourdomain.com/base"
 IMAGE_NAME="clawhub"
 PLATFORM="linux/amd64"
 
